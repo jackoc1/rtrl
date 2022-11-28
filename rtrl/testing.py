@@ -32,13 +32,16 @@ class Test:
     self.pool.join()
 
 
-def run_test(number, *, Env, actor, base_seed, steps):
+def run_test(number, *, Env, actor, base_seed, steps, render=False, render_mode='rgb'):
   t0 = pd.Timestamp.utcnow()
   env = Env(seed_val=base_seed + number)
+  frames=[]
   with StatsWrapper(env, window=steps) as env:
     for step in range(steps):
       action, stats = actor.act(*env.transition)
       # action = env.action_space.sample()
       env.step(action)
+      if render:
+        frames.append(env.render(mode=render_mode))
 
-    return pandas_dict(env.stats(), round_time=pd.Timestamp.utcnow() - t0)
+    return pandas_dict(env.stats(), round_time=pd.Timestamp.utcnow() - t0), frames

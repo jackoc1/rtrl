@@ -92,13 +92,20 @@ class Agent:
     loss_actor = self.outputnorm.normalize(loss_actor).mean()
 
     # update actor and critic
-    self.critic_optimizer.zero_grad()
-    loss_critic.backward()
-    self.critic_optimizer.step()
+    # self.critic_optimizer.zero_grad()
+    # loss_critic.backward()
+    # self.critic_optimizer.step()
+
+    # self.actor_optimizer.zero_grad()
+    # loss_actor.backward()
+    # self.actor_optimizer.step()
 
     self.actor_optimizer.zero_grad()
-    loss_actor.backward()
+    loss_actor.backward(retain_graph=True)
+    self.critic_optimizer.zero_grad()
+    loss_critic.backward()
     self.actor_optimizer.step()
+    self.critic_optimizer.step()
 
     # self.outputnorm.normalize(value_target, update=True)  # This is not the right place to update PopArt
 
